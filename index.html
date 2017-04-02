@@ -80,6 +80,11 @@
       <div class="svg-container"
           style="display: inline-block; border: 1px solid yellow"></div>
     </div>
+      <div class="toolset" id="tools-commands">
+      <img src="img/trash.png" style="width:64px; height:64px;"id="clear"/>
+      <img src="img/undo.png" style="width:64px; height:64px;"id="undo"/>
+      <img src="img/full.png" style="width:64px; height:64px;"id="full"/>
+      </div>
       <div class="toolset" id="tools-colors">
         <span class='toolLabel'>Colors:</span>
         <a href="javascript:void(0);" class='tool' id="colorTool-black">Black</a>
@@ -95,6 +100,8 @@
 
     <script src="js/jscolor.min.js"></script>
     <script src="js/jquery-1.8.2.js"></script>
+    <script src="js/jquery.hotkeys.js"</script>
+    <!--<script src="js/screenfull.min.js"</script>-->
     <script src="js/fastclick.js"></script>
     <script src="js/literallycanvas-core.js"></script>
 
@@ -106,6 +113,28 @@
 
       var setCurrentByName;
       var findByName;
+
+      function multibind(targets, action)
+      {
+          for(var i = 0; i < targets.length; i++)
+          {
+            targets[i](action)
+          }
+      }
+
+    document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
+
+    function requestFullscreen(element) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullScreen) {
+        element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+      }
+    }
+
+
 
         
         setCurrentByName = function(ary, val) {
@@ -183,6 +212,25 @@
           console.log("! "+ this.id)
             document.getElementById(this.id+"C").jscolor.show();          
         })
+        {
+          var fx = function() { 
+            if (document.fullscreenEnabled) {
+              requestFullscreen(document.documentElement);
+            }            
+           }
+          $("#full").click(fx)
+          $(document).bind("keypress","F11",fx)
+        }
+        {
+          var fx = function() { lc.clear() }
+          $("#clear").click(fx)
+          $(document).bind("keypress","c",fx)
+        }
+        {
+          var fx = function() { lc.undo() }
+          $("#undo").click(fx)
+          $(document).bind("keypress","backspace",fx)
+        }
 
         colors.forEach(function(clr) {
           $(clr.el).click(function() {
