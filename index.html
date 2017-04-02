@@ -13,6 +13,7 @@
         background-color: gray;
       }
 
+
       #tools-commands {
         float: left;
         width: 64px;
@@ -86,6 +87,7 @@
       <div class="toolset" id="tools-commands">
       <button title="New" id="clear"><img src="img/trash.png" style="width:64px; height:64px;"/></button>
       <button title="Undo" id="undo"><img src="img/undo.png" style="width:64px; height:64px;"/></button>
+      <button title="Redo" id="redo"><img src="img/redo.png" style="width:64px; height:64px;"/></button>
       <button title="Fullscreen" id="full"><img src="img/full.png" style="width:64px; height:64px;"/></button>
       Color<br/>
       <button id="frontcolor" onchange="frontcolorchange(this)"
@@ -212,6 +214,8 @@
           ],
         });
         window.demoLC = lc;
+
+        lc.containerEl.style.cursor = "url(img/pencil.png) 0 64 ,auto";
         //lc.setWatermarkImage(watermarkImage);
 
         colors = 
@@ -249,6 +253,11 @@
           var fx = function() { lc.undo() }
           $("#undo").click(fx)
           $(document).bind("keydown","backspace",fx)
+        }
+        {
+          var fx = function() { lc.redo() }
+          $("#redo").click(fx)
+          $(document).bind("keydown","shift+backspace",fx)
         }
 
         jscolorchange(document.getElementById("frontcolor").jscolor,function()
