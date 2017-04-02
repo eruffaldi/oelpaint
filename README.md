@@ -12,6 +12,7 @@ Web paint tool for my child, as a replacement for Tux Paint. Let explore both ke
 * make the user interface progressive
 * allow changing color from the current color (e.g. darker/lighter
 * allow a pen-down mode
+* parent mode gui
 
 # todo
 

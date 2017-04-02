@@ -84,10 +84,15 @@
 
   <body>
       <div class="toolset" id="tools-commands">
-      <button id="clear"><img src="img/trash.png" style="width:64px; height:64px;"/></button>
-      <button id="undo"><img src="img/undo.png" style="width:64px; height:64px;"/></button>
-      <button id="full"><img src="img/full.png" style="width:64px; height:64px;"/></button>
+      <button title="New" id="clear"><img src="img/trash.png" style="width:64px; height:64px;"/></button>
+      <button title="Undo" id="undo"><img src="img/undo.png" style="width:64px; height:64px;"/></button>
+      <button title="Fullscreen" id="full"><img src="img/full.png" style="width:64px; height:64px;"/></button>
+      Color<br/>
+      <button id="frontcolor"
+       class="jscolor {valueElement:null,value:'000000'}"
+       style="width:64px; height:64px;"></button>
       </div>
+
       <div class="fs-container">
         <div class="literally"></div>
         <!--<divx class="svg-container"
@@ -96,10 +101,10 @@
       <div class="sep"></div>
       <div class="toolset" id="tools-colors">
         <span class='toolLabel'></span>
-      <button id="resetcolors"><img src="img/reset.png" style="width:64px; height:64px;"/></button>
+      <button title="Reset Palette" id="resetcolors"><img src="img/reset.png" style="width:64px; height:64px;"/></button>
       </div>
       <div class ="toolset" >
-        Tasti: backspace=undo F11=fullscreen
+        Help: undo=backspace fullscreen=F11 update color=color/double-click
       </div>
 
     <script src="js/jscolor.min.js"></script>
@@ -110,6 +115,8 @@
     <script src="js/literallycanvas-core.js"></script>
 
     <script type="text/javascript">
+
+
       var lc = null;
       var tools;
       var strokeWidths;
@@ -131,6 +138,16 @@
           return fun.apply(obj, arguments);
        };
     };
+
+    function jscolorchange(obj, fx)
+    {
+       var bound = mybind(obj,obj.exportColor)
+        obj.exportColor = function(flags)
+        {
+          bound(flags)
+          fx()
+        }      
+    }
 
     document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
 
@@ -204,7 +221,13 @@
             [ "white","FFFFFF"],
             [ "red","FF0000"],
             [ "green","00FF00"],
-            [ "blue", "0000FF"]
+            [ "blue", "0000FF"],
+            [ "orange", "FFA500"],
+            [ "yellow", "FFFF00"],
+            [ "ltgreen", "90EE90"],
+            [ "ltblue", "ADD8E6"],
+            [ "pink", "FFC0CB"],
+            [ "purple", "800080"]
           ]
 
 
@@ -228,6 +251,11 @@
           $(document).bind("keydown","backspace",fx)
         }
 
+          jscolorchange(document.getElementById("frontcolor"),function()
+          {
+            lc.setColor('primary',             $(this).css("background-color"))
+          })
+                    
         colors.forEach(function(clr) {
           var ce = "color_"+clr[0]
           var c = clr[1]
@@ -244,19 +272,19 @@
           picker.fromString("#"+c)
           tt.jscolor = picker
 
-         var bound = mybind(picker,picker.exportColor)
-
-
-          picker.exportColor = function(flags)
+          jscolorchange(picker,function()
           {
-            bound(flags)
-            lc.setColor('primary', $(tt).css( "background-color" ))
+            var c = $(tt).css( "background-color" )
+            $("#frontcolor").css("background-color",c)
+            lc.setColor('primary',c)
           }
+          )
                     
 
           $("#"+ce).click(function() {
-              lc.setColor('primary', $(this).css( "background-color" ))
-              //setCurrentByName(colors, clr.name);
+              var c = $(tt).css( "background-color" )
+              $("#frontcolor").css("background-color",c)
+              lc.setColor('primary',c)
             })
           $("#"+ce).dblclick(function ()
           {
