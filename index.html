@@ -222,7 +222,7 @@
         {
           var fx = function() { lc.undo() }
           $("#undo").click(fx)
-          $(document).bind("keypress","backspace",fx)
+          $(document).bind("keydown","backspace",fx)
         }
 
         colors.forEach(function(clr) {
