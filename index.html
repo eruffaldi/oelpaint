@@ -14,9 +14,15 @@
         height: 80%;
       }
 
+      #tools-commands {
+        float: left;
+        width: 64px;
+      }
+
       .fs-container {
        width: 80%;
-       margin: 20px;
+       margin: 10px;
+       float:left;
       }
 
       .literally {
@@ -25,7 +31,7 @@
       }
 
       .literally img.background, .literally > canvas {
-        position: absolute;
+        xposition: absolute;
       }
 
       .toolset {
@@ -42,6 +48,8 @@
         text-decoration: none;
         position: relative; // give after context later
       }
+
+      div.sep { clear:both;}
 
       .tool.current {
         color: #fff;
@@ -75,27 +83,19 @@
   </head>
 
   <body>
-    <div class="fs-container">
-      <div class="literally"></div>
-      <div class="svg-container"
-          style="display: inline-block; border: 1px solid yellow"></div>
-    </div>
       <div class="toolset" id="tools-commands">
-      <img src="img/trash.png" style="width:64px; height:64px;"id="clear"/>
-      <img src="img/undo.png" style="width:64px; height:64px;"id="undo"/>
-      <img src="img/full.png" style="width:64px; height:64px;"id="full"/>
+      <button id="clear"><img src="img/trash.png" style="width:64px; height:64px;"/></button>
+      <button id="undo"><img src="img/undo.png" style="width:64px; height:64px;"/></button>
+      <button id="full"><img src="img/full.png" style="width:64px; height:64px;"/></button>
       </div>
+      <div class="fs-container">
+        <div class="literally"></div>
+        <div class="svg-container"
+            style="display: inline-block; border: 1px solid yellow"></div>
+      </div>
+      <div class="sep"></div>
       <div class="toolset" id="tools-colors">
-        <span class='toolLabel'>Colors:</span>
-        <a href="javascript:void(0);" class='tool' id="colorTool-black">Black</a>
-        <button id="styleInput" style="width:50px; height:20px;">
-        <!---->
-  </button>
-        <button class="jscolor    {valueElement:null,value:'66ccff',styleElement:'styleInput'}" id="styleInputC" style="width:50px; height:20px;">
-  </button>
-
-        <a href="javascript:void(0);" class='tool' id="colorTool-blue">Blue</a>
-        <a href="javascript:void(0);" class='tool' id="colorTool-red">Red</a>
+        <span class='toolLabel'></span>
       </div>
 
     <script src="js/jscolor.min.js"></script>
@@ -187,31 +187,17 @@
         window.demoLC = lc;
         //lc.setWatermarkImage(watermarkImage);
 
-        colors = [
-          {
-            name: 'black',
-            el: document.getElementById('colorTool-black'),
-            color: '#000000'
-          },{
-            name: 'blue',
-            el: document.getElementById('colorTool-blue'),
-            color: '#0000ff'
-          },{
-            name: 'red',
-            el: document.getElementById('colorTool-red'),
-            color: '#ff0000'
-          }
-        ]; 
+        colors = 
+          [ [ "black","000000" ],
+            [ "gray","333333"],
+            [ "ltgray","333333"],
+            [ "white","FFFFFF"],
+            [ "red","FF0000"],
+            [ "green","00FF00"],
+            [ "blue", "0000FF"]
+          ]
 
-        $("#styleInput").click(function() {
-            lc.setColor('primary', $(this).css( "background-color" ))
-            //setCurrentByName(colors, clr.name);
-          })
-        $("#styleInput").dblclick(function ()
-        {
-          console.log("! "+ this.id)
-            document.getElementById(this.id+"C").jscolor.show();          
-        })
+
         {
           var fx = function() { 
             if (document.fullscreenEnabled) {
@@ -233,10 +219,32 @@
         }
 
         colors.forEach(function(clr) {
-          $(clr.el).click(function() {
-            lc.setColor('primary', clr.color)
-            setCurrentByName(colors, clr.name);
+          var ce = "color_"+clr[0]
+          var c = clr[1]
+          $("#tools-colors").append(            
+
+          "<button id='COLORELEM' style='width:50px; height:50px;'></button>".replace(/COLORELEM/g,ce)          )
+
+          var tt = document.getElementById(ce)
+          var picker = new jscolor(tt)
+          tt.innerHTML = "";
+          picker.valueElement =null 
+          picker.showOnClick = false
+          picker.importColor()
+          picker.fromString("#"+c)
+          tt.jscolor = picker
+
+          // prevent
+
+          $("#"+ce).click(function() {
+              lc.setColor('primary', $(this).css( "background-color" ))
+              //setCurrentByName(colors, clr.name);
+            })
+          $("#"+ce).dblclick(function ()
+          {
+              this.jscolor.show()         
           })
+
         })
         setCurrentByName(colors, colors[0].name);
 
