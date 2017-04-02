@@ -88,7 +88,7 @@
       <button title="Undo" id="undo"><img src="img/undo.png" style="width:64px; height:64px;"/></button>
       <button title="Fullscreen" id="full"><img src="img/full.png" style="width:64px; height:64px;"/></button>
       Color<br/>
-      <button id="frontcolor"
+      <button id="frontcolor" onchange="frontcolorchange(this)"
        class="jscolor {valueElement:null,value:'000000'}"
        style="width:64px; height:64px;"></button>
       </div>
@@ -139,10 +139,10 @@
        };
     };
 
-    function jscolorchange(obj, fx)
+    function jscolorchange(jscolorobj, fx)
     {
-       var bound = mybind(obj,obj.exportColor)
-        obj.exportColor = function(flags)
+       var bound = mybind(jscolorobj,jscolorobj.exportColor)
+        jscolorobj.exportColor = function(flags)
         {
           bound(flags)
           fx()
@@ -251,10 +251,10 @@
           $(document).bind("keydown","backspace",fx)
         }
 
-          jscolorchange(document.getElementById("frontcolor"),function()
-          {
-            lc.setColor('primary',             $(this).css("background-color"))
-          })
+        jscolorchange(document.getElementById("frontcolor").jscolor,function()
+        {
+          lc.setColor('primary',             $("#frontcolor").css("background-color"))
+        })
                     
         colors.forEach(function(clr) {
           var ce = "color_"+clr[0]
