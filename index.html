@@ -114,6 +114,7 @@
     <script src="js/jquery.hotkeys.js"</script>
     <!--<script src="js/screenfull.min.js"</script>-->
     <script src="js/fastclick.js"></script>
+    <script src="js/floodfill.min.js"></script>
     <script src="js/literallycanvas-core.js"></script>
 
     <script type="text/javascript">
@@ -254,6 +255,27 @@
           $("#undo").click(fx)
           $(document).bind("keydown","backspace",fx)
         }
+
+        {
+          var mfx = lc.pointerDown // original fx
+          lc.pointerDown = function (x,y)
+          {
+            lc.lastdown = lc.clientCoordsToDrawingCoords(x,y)
+            return mfx.call(lc,x,y)
+          }
+          var fx = function() { 
+            // experimental
+            //lc.clientCoordsToDrawingCoords
+            var context = lc.ctx
+            context.fillStyle = "rgba(255,0,0,1.0)";
+            context.rect(lc.lastdown.x*lc.backingScale, lc.lastdown.y*lc.backingScale,10,10);
+            context.stroke();
+            //context.fillFlood(lc.lastdown.x/lc.backingScale, lc.lastdown.y/lc.backingScale, 32);
+
+           }
+          $(document).bind("keydown","f",fx)
+        }
+
         {
           var fx = function() { lc.redo() }
           $("#redo").click(fx)
