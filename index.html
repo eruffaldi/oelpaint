@@ -96,6 +96,7 @@
       <div class="sep"></div>
       <div class="toolset" id="tools-colors">
         <span class='toolLabel'></span>
+      <button id="resetcolors"><img src="img/reset.png" style="width:64px; height:64px;"/></button>
       </div>
 
     <script src="js/jscolor.min.js"></script>
@@ -121,6 +122,12 @@
             targets[i](action)
           }
       }
+
+    function mybind(obj, fun) {
+       return function() {
+          return fun.apply(obj, arguments);
+       };
+    };
 
     document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
 
@@ -234,7 +241,15 @@
           picker.fromString("#"+c)
           tt.jscolor = picker
 
-          // prevent
+         var bound = mybind(picker,picker.exportColor)
+
+
+          picker.exportColor = function(flags)
+          {
+            bound(flags)
+            lc.setColor('primary', $(tt).css( "background-color" ))
+          }
+                    
 
           $("#"+ce).click(function() {
               lc.setColor('primary', $(this).css( "background-color" ))
@@ -246,7 +261,21 @@
           })
 
         })
-        setCurrentByName(colors, colors[0].name);
+
+        setCurrentByName(colors, "black");
+
+        $("#resetcolors").click(
+          function ()
+          {
+            colors.forEach(function(clr) {
+              var ce = "color_"+clr[0]
+              var c = clr[1]
+              var tt = document.getElementById(ce)
+              tt.jscolor.fromString("#"+c)
+            })
+          }
+        )
+
 
 
         var save = function() {
