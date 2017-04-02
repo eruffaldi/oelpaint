@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Literally Canvas</title>
+    <link href="css/literallycanvas.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+
+    <style type="text/css">
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin: 0;
+        background-color: gray;
+        height: 80%;
+      }
+
+      .fs-container {
+       width: 80%;
+       margin: 20px;
+      }
+
+      .literally {
+        width: 100%;
+        height: 100%;
+      }
+
+      .literally img.background, .literally > canvas {
+        position: absolute;
+      }
+
+      .toolset {
+        margin: 1rem;
+      }
+
+      .tool {
+        background: hsla(199, 26%, 44%, 0.5);
+        padding: 0.25rem;
+        margin: 0.25rem;
+        border-radius: 0.25rem;
+        color: #000;
+        text-align: center;
+        text-decoration: none;
+        position: relative; // give after context later
+      }
+
+      .tool.current {
+        color: #fff;
+        background: hsla(199, 26%, 44%, 1);
+      }
+
+      .tool:hover {
+        text-decoration: underline;
+        background: hsla(199, 26%, 44%, 0.75);
+      }
+
+      .toolLabel {
+        font-size: 1.25rem;
+      }
+
+      #tools-sizes.disabled {
+        pointer-events: none;
+      }
+
+      #tools-sizes.disabled .tool:after {
+        content: ' ';
+        background: hsla(0, 100%, 100%, 0.75);
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-radius: 0.25rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="fs-container">
+      <div class="literally"></div>
+      <div class="svg-container"
+          style="display: inline-block; border: 1px solid yellow"></div>
+    </div>
+      <div class="toolset" id="tools-colors">
+        <span class='toolLabel'>Colors:</span>
+        <a href="javascript:void(0);" class='tool' id="colorTool-black">Black</a>
+        <button id="styleInput" style="width:50px; height:20px;">
+        <!---->
+  </button>
+        <button class="jscolor    {valueElement:null,value:'66ccff',styleElement:'styleInput'}" id="styleInputC" style="width:50px; height:20px;">
+  </button>
+
+        <a href="javascript:void(0);" class='tool' id="colorTool-blue">Blue</a>
+        <a href="javascript:void(0);" class='tool' id="colorTool-red">Red</a>
+      </div>
+
+    <script src="js/jscolor.min.js"></script>
+    <script src="js/jquery-1.8.2.js"></script>
+    <script src="js/fastclick.js"></script>
+    <script src="js/literallycanvas-core.js"></script>
+
+    <script type="text/javascript">
+      var lc = null;
+      var tools;
+      var strokeWidths;
+      var colors;
+
+      var setCurrentByName;
+      var findByName;
+
+        
+        setCurrentByName = function(ary, val) {
+          ary.forEach(function(i) {
+            $(i.el).toggleClass('current', (i.name == val));
+          });
+        };
+
+
+      var updateSVG = function() {
+        if (!lc) return;
+        $('.svg-container')[0].innerHTML = lc.getSVGString();
+      }
+
+      var backgroundImage = new Image();
+      window.debugImage = backgroundImage;
+
+      //LC.util.addImageOnload(backgroundImage, updateSVG);
+
+      //backgroundImage.src = '/demo/bear.png';
+
+      var watermarkImage = new Image();
+      //watermarkImage.src = '/demo/watermark.png';
+
+      // the only LC-specific thing we have to do
+      var containerOne = document.getElementsByClassName('literally')[0];
+
+      var showLC = function() {
+        // disable scrolling on touch devices so we can actually draw
+        $(document).bind('touchmove', function(e) {
+          if (e.target === document.documentElement) {
+            return e.preventDefault();
+          }
+        });
+
+        lc = LC.init(containerOne, {
+          snapshot: JSON.parse(localStorage.getItem('drawing')),
+          defaultStrokeWidth: 10,
+          strokeWidths: [10, 20, 50],
+          secondaryColor: 'transparent',
+          backgroundShapes: [
+            /*LC.createShape(
+              'Image', {image: backgroundImage, x: 100, y: 100, scale: 2}),
+            LC.createShape(
+              'Rectangle',
+              {x: 0, y: 0, width: 100, height: 100, strokeColor: '#000'})
+            */
+          ],
+        });
+        window.demoLC = lc;
+        //lc.setWatermarkImage(watermarkImage);
+
+        colors = [
+          {
+            name: 'black',
+            el: document.getElementById('colorTool-black'),
+            color: '#000000'
+          },{
+            name: 'blue',
+            el: document.getElementById('colorTool-blue'),
+            color: '#0000ff'
+          },{
+            name: 'red',
+            el: document.getElementById('colorTool-red'),
+            color: '#ff0000'
+          }
+        ]; 
+
+        $("#styleInput").click(function() {
+            lc.setColor('primary', $(this).css( "background-color" ))
+            //setCurrentByName(colors, clr.name);
+          })
+        $("#styleInput").dblclick(function ()
+        {
+          console.log("! "+ this.id)
+            document.getElementById(this.id+"C").jscolor.show();          
+        })
+
+        colors.forEach(function(clr) {
+          $(clr.el).click(function() {
+            lc.setColor('primary', clr.color)
+            setCurrentByName(colors, clr.name);
+          })
+        })
+        setCurrentByName(colors, colors[0].name);
+
+
+        var save = function() {
+          localStorage.setItem('drawing', JSON.stringify(lc.getSnapshot()));
+          updateSVG();
+        }
+
+      }
+
+      $(document).ready(function() {
+        // disable scrolling on touch devices so we can actually draw
+        $(document).bind('touchmove', function(e) {
+          if (e.target === document.documentElement) {
+            return e.preventDefault();
+          }
+        });
+        showLC();
+      });
+
+    </script>
+
+    <xscript src="//localhost:35728/livereload.js"></scriptx>
+  </body>
+</html>
