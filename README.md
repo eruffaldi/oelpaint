@@ -18,4 +18,5 @@ Web paint tool for my child, as a replacement for Tux Paint. Let explore both ke
 * allow changing color from the current color (e.g. darker/lighter)
 * allow a pen-down mode (turle mode)
 * parent mode gui
+* MAYBE quick special effects using glfx http://evanw.github.io/glfx.js/docs/
 * MAYBE special cursor: http://codepen.io/satchmorun/pen/JoGVwb
